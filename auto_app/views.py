@@ -6,33 +6,34 @@ from .models import Car, Owner
 from .serializers import CarSerializer, OwnerSerializer
 
 
-class CarListView(APIView):
+class CarView(APIView):
     def get(self, request):
-        car = Car.objects.all()
-        car_serializer = CarSerializer(car, many=True)
-        return Response({'cars': car_serializer.data}, status=status.HTTP_200_OK)
+        cars = Car.objects.all()
+        cars_serializers = CarSerializer(cars, many=True)
+        return Response({'cars': cars_serializers.data}, status=status.HTTP_200_OK)
+
+    def post(self, request: Request) -> Response:
+        car_serializers = CarSerializer(data=request.data)
+        try:
+            car_serializers.is_valid(raise_exception=True)
+            car_serializers.save()
+            return Response(car_serializers.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class OwnerListView(APIView):
+class OwnerView(APIView):
     def get(self, request):
-        owner = Owner.objects.all()
-        owner_serializer = OwnerSerializer(owner, many=True)
-        return Response({'owners': owner_serializer.data}, status=status.HTTP_200_OK)
+        owners = Owner.objects.all()
+        owner_serializers = OwnerSerializer(owners, many=True)
+        return Response({'owners': owner_serializers.data}, status=status.HTTP_200_OK)
     
-
-class CreateCarView(APIView):
-    def post(self, request: Request) -> Response:
-        serializer = CarSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-
-class CreateOwnerView(APIView):
-    def post(self, request: Request) -> Response:
-        serializer = OwnerSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request: Request) -> Response:       
+        owner_serializers = OwnerSerializer(data=request.data)
+        try:
+            owner_serializers.is_valid(raise_exception=True)
+            owner_serializers.save()
+            return Response(owner_serializers.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        

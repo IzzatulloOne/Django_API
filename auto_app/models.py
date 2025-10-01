@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
 class Owner(models.Model):
     name = models.CharField(max_length=100)
     age = models.PositiveSmallIntegerField()
@@ -79,3 +80,5 @@ class Car(models.Model):
 
     def __str__(self):
         return f"{self.brand} {self.model} ({self.year})"
+
+# ha ustoz shu yerda ChatGPT ishlatim lekin bu minus emasku , menga koproq atributlar chiqrib beradi men buncha narsani bilmayman bitta moshinada shuncha xarakteristikasi bolsa
