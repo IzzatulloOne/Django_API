@@ -1,10 +1,34 @@
 from rest_framework import serializers
-from .models import Car
-from .models import Owner
+from .models import Car, Owner, Brand
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+class BrandSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=44)
+    description = serializers.CharField(max_length=550)
+    since = serializers.IntegerField()
+
+    def create(self, validated_data):
+        return Brand.objects.create(**validated_data)
+    
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
+
 
 class OwnerSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
     age = serializers.IntegerField()
+
+    def create(self, validated_data):
+        return Owner.objects.create(**validated_data)   
+    
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 class CarSerializer(serializers.Serializer):
@@ -53,13 +77,15 @@ class CarSerializer(serializers.Serializer):
         return car
     
     def update(self, instance, validated_data):
-        owner_data = validated_data.pop('owner')
+        owner_data = validated_data.pop("owner", None)
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
-        
-        for attr, value in owner_data.items():
-            setattr(instance.owner, attr, value)
-        instance.owner.save()
-        
+
+        if owner_data:
+            for attr, value in owner_data.items():
+                setattr(instance.owner, attr, value)
+            instance.owner.save()
+
         return instance

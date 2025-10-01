@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Owner, Car
+from .models import Owner, Car, Brand
 
 @admin.register(Owner)
 class OwnerAdmin(admin.ModelAdmin):
@@ -35,5 +35,16 @@ class CarAdmin(admin.ModelAdmin):
         }),
         ('Безопасность и комфорт', {
             'fields': ('safety_rating', 'seats', 'has_air_conditioner', 'has_multimedia')
+        }),
+    )
+
+@admin.register(Brand)
+class BrandAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'since')
+    search_fields = ('name',)
+    ordering = ('name',)
+    fieldsets = (
+        ('Информация о бренде', {
+            'fields': ('name', 'description', 'since')
         }),
     )

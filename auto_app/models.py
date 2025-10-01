@@ -1,6 +1,17 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+class Brand(models.Model):
+    name = models.CharField(max_length=44, unique=True)
+    description = models.CharField(max_length=550, blank=True, null=True)
+    since = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(2024)],
+        help_text="Год основания бренда"
+    )
+
+    def __str__(self):
+        return self.name
+
 
 class Owner(models.Model):
     name = models.CharField(max_length=100)
