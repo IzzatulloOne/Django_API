@@ -13,6 +13,14 @@ class Brand(models.Model):
         return self.name
 
 
+class Color(models.Model):
+    name = models.CharField(max_length=30, unique=True)
+    hex_code = models.CharField(max_length=7, help_text="Hexadecimal color code, e.g., #FFFFFF for white")
+
+    def __str__(self):
+        return self.name
+
+
 class Owner(models.Model):
     name = models.CharField(max_length=100)
     age = models.PositiveSmallIntegerField()
@@ -21,6 +29,7 @@ class Owner(models.Model):
         ("female", "Женский"),
         ("other", "Другой"),
     ])
+
 
     def __str__(self):
         return self.name
@@ -87,7 +96,7 @@ class Car(models.Model):
         ("roadster", "Родстер"),
         ("pickup", "Пикап"),
     ])
-    color = models.CharField(max_length=30, default="Черный")
+    color = models.ForeignKey(Color, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.brand} {self.model} ({self.year})"

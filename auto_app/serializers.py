@@ -1,11 +1,27 @@
 from rest_framework import serializers
-from .models import Car, Owner, Brand
+from .models import Car, Owner, Brand, Color
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-class BrandSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=44)
-    description = serializers.CharField(max_length=550)
-    since = serializers.IntegerField()
+
+class Color(serializers.ModelSerializer):
+    class Meta:
+        model = Color
+        fields = '__all__'
+
+
+    def create(self, validated_data):
+        return Color.objects.create(**validated_data)
+    
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance,attr,value)
+        instance.save()
+        return instance
+
+class BrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = "__all__"
 
     def create(self, validated_data):
         return Brand.objects.create(**validated_data)
@@ -17,9 +33,10 @@ class BrandSerializer(serializers.Serializer):
         return instance
 
 
-class OwnerSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=100)
-    age = serializers.IntegerField()
+class OwnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Owner
+        fields = ['__all__']
 
     def create(self, validated_data):
         return Owner.objects.create(**validated_data)   
@@ -32,44 +49,10 @@ class OwnerSerializer(serializers.Serializer):
 
 
 class CarSerializer(serializers.Serializer):
-    owner = OwnerSerializer()
-    brand = serializers.CharField(max_length=44)
-    model = serializers.CharField(max_length=50)
-    year = serializers.IntegerField()
+    class Meta:
+        model = Car
+        fields = ['__all__']
     
-    engine_type = serializers.ChoiceField(choices=[
-        ("petrol", "Бензин"),
-        ("diesel", "Дизель"),
-        ("hybrid", "Гибрид"),
-        ("electric", "Электро"),
-    ])
-    engine_volume = serializers.DecimalField(max_digits=4, decimal_places=1)
-    horsepower = serializers.IntegerField()
-    torque = serializers.IntegerField(help_text="Ньютон-метры")
-    
-    transmission = serializers.ChoiceField(choices=[
-        ("manual", "Механика"),
-        ("automatic", "Автомат"),
-        ("cvt", "Вариатор"),
-        ("dct", "Робот"),
-    ])
-    drive_type = serializers.ChoiceField(choices=[
-        ("fwd", "Передний"),
-        ("rwd", "Задний"),
-        ("awd", "Полный"),
-    ])
-    
-    length = serializers.IntegerField(help_text="мм")
-    width = serializers.IntegerField(help_text="мм")
-    height = serializers.IntegerField(help_text="мм")
-    wheelbase = serializers.IntegerField(help_text="мм")
-    weight = serializers.IntegerField(help_text="кг")
-    
-    acceleration_0_100 = serializers.DecimalField(max_digits=4, decimal_places=2, help_text="секунды")
-    max_speed = serializers.IntegerField(help_text="км/ч")
-    fuel_consumption = serializers.DecimalField(max_digits=4, decimal_places=1, help_text="л/100км")
-    safety_rating = serializers.DecimalField(max_digits=3, decimal_places=1, help_text="Оценка безопасности")
-
     def create(self, validated_data):
         owner_data = validated_data.pop('owner')
         owner = Owner.objects.create(**owner_data)
