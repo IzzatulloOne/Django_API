@@ -2,10 +2,16 @@ from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Car, Owner, Brand
-from .serializers import CarSerializer, OwnerSerializer, BrandSerializer
 from rest_framework import permissions
 from rest_framework import generics
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+
+from .models import Car, Owner, Brand
+from .serializers import CarSerializer, OwnerSerializer, BrandSerializer
+from .permissions import MyCustomPermissions
+from .paginator import CustomPagination
+
 
 class AdminUpdateOnly(permissions.BasePermission):  
     def has_permission(self, request, view):
@@ -16,7 +22,12 @@ class AdminUpdateOnly(permissions.BasePermission):
 class CarView(generics.ListCreateAPIView):
     queryset = Car.objects.order_by('-id')
     serializer_class = CarSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly | AdminUpdateOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly | MyCustomPermissions]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['id', 'brand', 'model', 'year', 'engine_type', 'transmission', 'color__name', 'owner__name']
+    search_fields = ['brand', 'model', 'year', 'engine_type', 'transmission', 'color__name', 'owner__name']
+    ordering_fields = ['id', 'brand', 'model', 'year', 'engine_type', 'transmission', 'color__name', 'owner__name']
+    pagination_class = CustomPagination
 
     def get(self, request, *args, **kwargs):
         return self.list(request,*args, **kwargs)
@@ -38,6 +49,11 @@ class OwnerView(generics.ListCreateAPIView):
     queryset = Owner.objects.order_by('-id')
     serializer_class = OwnerSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly | AdminUpdateOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['id', 'name', 'email', 'phone']
+    search_fields = ['name', 'email', 'phone']
+    ordering_fields = ['id', 'name', 'email', 'phone']
+    pagination_class = CustomPagination
 
     def get(self, request, *args, **kwargs):
         return self.list(request,*args, **kwargs)
@@ -59,6 +75,11 @@ class BrandView(generics.ListCreateAPIView):
     queryset = Brand.objects.order_by('-id')
     serializer_class = BrandSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly | AdminUpdateOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['id', 'name', 'since']
+    search_fields = ['name', 'since']
+    ordering_fields = ['id', 'name', 'since']
+    pagination_class = CustomPagination
 
     def get(self, request, *args, **kwargs):
         return self.list(request,*args, **kwargs)
@@ -80,7 +101,7 @@ class GetCarView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Car.objects.all()
     serializer_class = CarSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly | AdminUpdateOnly]
-
+    
 class GetOwnerView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Owner.objects.all()
     serializer_class = OwnerSerializer
