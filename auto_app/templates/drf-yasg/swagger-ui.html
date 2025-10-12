@@ -1,0 +1,123 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Swagger UI core CSS (CDN fallback) -->
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4/swagger-ui.css">
+
+  <!-- Custom dark / neon styles -->
+  <style>
+    /* Page base */
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Inter, Roboto, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #05060a 0%, #071021 60%);
+      color: #e6f7ff;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Container */
+    .swagger-ui { padding: 24px; }
+    .topbar {
+      background: linear-gradient(90deg,#060613 0%, #071025 30%, rgba(0,0,0,0.12) 70%);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 6px 24px rgba(2,6,23,0.6) inset;
+    }
+
+    /* Neon header/logo */
+    .topbar .topbar-wrapper { display:flex; align-items:center; gap:12px; }
+    .topbar .link { color: #00e5ff; }
+    .topbar .topbar-wrapper .logo { font-weight: 700; font-size: 18px; letter-spacing: 0.6px; }
+    .topbar .topbar-wrapper .logo .neon {
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, rgba(0,255,163,0.08), rgba(255,45,149,0.06));
+      box-shadow: 0 0 28px rgba(0,255,163,0.06), 0 0 10px rgba(255,45,149,0.03);
+      color: #00ffa3;
+      text-shadow: 0 0 8px rgba(0,255,163,0.14), 0 0 18px rgba(0,255,163,0.06);
+    }
+
+    /* Info box */
+    .info { background: rgba(255,255,255,0.02); border-radius: 10px; padding: 14px; }
+    .scheme-container { background: rgba(10,12,18,0.4); border-radius: 8px; }
+
+    /* Operation blocks */
+    .opblock { background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 4px 18px rgba(2,6,23,0.5); }
+    .opblock .opblock-summary-method { color: #fff; font-weight: 700; }
+
+    /* Method colors (neon accents) */
+    .opblock .opblock-summary-method.get { background: linear-gradient(90deg,#003a3f, #006064); color: #00e5ff; box-shadow: 0 4px 24px rgba(0,229,255,0.06); }
+    .opblock .opblock-summary-method.post { background: linear-gradient(90deg,#3a003a,#640060); color: #ff6ad6; box-shadow: 0 4px 24px rgba(255,106,214,0.06); }
+    .opblock .opblock-summary-method.put { background: linear-gradient(90deg,#2b3a00,#606400); color: #ffe600; box-shadow: 0 4px 24px rgba(255,230,0,0.06); }
+    .opblock .opblock-summary-method.delete { background: linear-gradient(90deg,#4a0000,#7a0000); color: #ff6b6b; box-shadow: 0 4px 24px rgba(255,107,107,0.06); }
+
+    /* Buttons */
+    .btn, .execute, .try-out, .authorize { 
+      border-radius: 8px; 
+      border: 1px solid rgba(255,255,255,0.06);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
+      box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+    }
+    .btn.authorize { color: #00e5ff; }
+    .btn.try-out { color: #00ffa3; }
+    .btn.execute { color: #fff; background: linear-gradient(90deg,#00ffa3,#00e5ff); color: #041018; font-weight:700; }
+
+    /* Inputs and code blocks */
+    input[type='text'], textarea, select { background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.04); color: #e6f7ff; border-radius: 6px; }
+    .opblock-section .parameter__name { color: #9be9ff; }
+    .opblock .responses__item { background: rgba(0,0,0,0.35); border-radius: 8px; }
+    pre, code { background: rgba(6,10,18,0.6); color: #cffcff; padding: 10px; border-radius: 8px; }
+
+    /* Links */
+    a { color: #00e5ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Footer / Misc */
+    .info .title { color: #cfefff; }
+
+    /* Responsive tweaks */
+    @media (max-width: 800px) {
+      .swagger-ui { padding: 12px; }
+      .topbar .logo { font-size: 16px; }
+    }
+  </style>
+
+  <title>API — Swagger UI (Dark Neon)</title>
+</head>
+<body>
+
+  <div id="swagger-ui"></div>
+
+  <!-- Swagger UI JS bundle (CDN) -->
+  <script src="https://unpkg.com/swagger-ui-dist@4/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@4/swagger-ui-standalone-preset.js"></script>
+
+  <script>
+    window.onload = function() {
+      // schema_url — переменная, которую drf-yasg передаёт в контекст
+      const specUrl = "{{ schema_url }}" || window.location.href;
+
+      const ui = SwaggerUIBundle({
+        url: specUrl,
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        layout: 'StandaloneLayout',
+        docExpansion: 'none',
+        operationsSorter: 'alpha'
+      });
+
+      window.ui = ui;
+    };
+  </script>
+</body>
+</html>

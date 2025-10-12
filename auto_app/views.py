@@ -29,20 +29,16 @@ class CarView(generics.ListCreateAPIView):
     ordering_fields = ['id', 'brand', 'model', 'year', 'engine_type', 'transmission', 'color__name', 'owner__name']
     pagination_class = CustomPagination
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request,*args, **kwargs)
-    
-    def post(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-    
-    def patch(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+    def get_queryset(self):
+        q = self.queryset.all()
+        return q
 
-    def put(self,request, *args, **kwargs):
-        return self.list(request,*args,**kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            s = CarSerializer
+        else:
+            s = self.serializer_class
+        return s
 
 
 class OwnerView(generics.ListCreateAPIView):
@@ -55,20 +51,16 @@ class OwnerView(generics.ListCreateAPIView):
     ordering_fields = ['id', 'name', 'email', 'phone']
     pagination_class = CustomPagination
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request,*args, **kwargs)
-    
-    def post(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-    
-    def patch(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+    def get_queryset(self):
+        q = self.queryset.all()
+        return q
 
-    def put(self,request, *args, **kwargs):
-        return self.list(request,*args,**kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            s = OwnerSerializer
+        else:
+            s = self.serializer_class
+        return s
 
 
 class BrandView(generics.ListCreateAPIView):
@@ -81,20 +73,16 @@ class BrandView(generics.ListCreateAPIView):
     ordering_fields = ['id', 'name', 'since']
     pagination_class = CustomPagination
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request,*args, **kwargs)
-    
-    def post(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-    
-    def patch(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+    def get_queryset(self):
+        q = self.queryset.all()
+        return q
 
-    def put(self,request, *args, **kwargs):
-        return self.list(request,*args,**kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            s = BrandSerializer
+        else:
+            s = self.serializer_class
+        return s
 
 
 class GetCarView(generics.RetrieveUpdateDestroyAPIView):
